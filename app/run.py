@@ -9,13 +9,17 @@ from nltk.tokenize import word_tokenize
 from flask import Flask
 from flask import render_template, request, jsonify
 from plotly.graph_objs import Bar, Pie
-import joblib
+# import joblib
 from sqlalchemy import create_engine
 
 
 app = Flask(__name__)
 
 def tokenize(text):
+    """ tokenizer for text input on web app
+    Input: text message
+    Output: list of tokens
+    """
     tokens = word_tokenize(text)
     lemmatizer = WordNetLemmatizer()
 
@@ -39,9 +43,8 @@ with open('../models/classifier.pkl', 'rb') as f:
 @app.route('/')
 @app.route('/index')
 def index():
-    
+    """ renders master.html and creates graphs for webpage """
     # extract data needed for visuals
-    # TODO: Below is an example - modify to extract data for your own visuals
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
 
@@ -49,7 +52,6 @@ def index():
     categorie_names = df.iloc[:, 4:].columns
     
     # create visuals
-    # TODO: Below is an example - modify to create your own visuals
     graphs = [
         {
             'data': [
@@ -94,9 +96,9 @@ def index():
     return render_template('master.html', ids=ids, graphJSON=graphJSON)
 
 
-# web page that handles user query and displays model results
 @app.route('/go')
 def go():
+    """ web page that handles user query and displays model results """
     # save user input in query
     query = request.args.get('query', '') 
 

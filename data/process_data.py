@@ -1,11 +1,14 @@
 # import libraries
 import pandas as pd
-import sqlite3
 from sqlalchemy import create_engine
 import sys
 
 
 def load_data(messages_filepath, categories_filepath):
+    """ load two datasets from each filepath
+    Input: two filepaths
+    Output: merged dataframe of both datasets
+    """
     # load both dfs
     messages = pd.read_csv(messages_filepath)
     categories = pd.read_csv(categories_filepath)
@@ -17,6 +20,7 @@ def load_data(messages_filepath, categories_filepath):
 
 
 def clean_data(df):
+    """ cleans dataframe """
     # split categories column into separate columns
     categories = df['categories'].str.split(';', expand=True)
     
@@ -55,12 +59,14 @@ def clean_data(df):
 
 
 def save_data(df, database_filename):
+    """ save dataframe to sql database, table name='clean_messages' """
     # use sql alchemy engine to store df to an sqlite db
     engine = create_engine(f'sqlite:///{database_filename}')
     df.to_sql('clean_messages', engine, index=False, if_exists='replace')
 
 
 def main():
+    """ main script """
     if len(sys.argv) == 4:
 
         messages_filepath, categories_filepath, database_filepath = sys.argv[1:]

@@ -3,8 +3,8 @@ import pandas as pd
 import re
 import nltk
 import pickle
-
 import sqlite3
+import MLSMOTE
 
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
@@ -19,24 +19,26 @@ from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.multioutput import MultiOutputClassifier
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import classification_report, precision_recall_fscore_support
-
-# load MLSMOTE
-import MLSMOTE
 
 
 def load_data(database_filepath):
+    """ load data from sql database """
     conn = sqlite3.connect(database_filepath)
     query = 'SELECT * FROM clean_messages'
     df = pd.read_sql(query, con=conn)
-    X = df['message'].iloc[0:1000]
-    Y = df.iloc[0:1000, 4:]
+    X = df['message'].iloc[0:10000]
+    Y = df.iloc[0:10000, 4:]
     
     return X, Y
 
 
 def tokenize(text):
+    """ tokenize text messages
+    Input: text messages
+    Output: list of tokens
+    """
     # find urls and replace them with 'urlplaceholder'
     url_regex = 'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
     text = re.sub(url_regex, 'urlplaceholder', text)
@@ -55,7 +57,39 @@ def tokenize(text):
     return tokens
 
 
-def build_model(X_train, y_train):
+def grid_search(X_train, y_train):
+    """ use GridSearch to find best value for 'min_samples_split'
+    Input: train data
+    Output: best parameter value
+    """
+    # set parameter
+    parameters = {
+        'clf__estimator__min_samples_split': [2, 3],
+    }
+
+    # declare pipeline
+    pipeline = Pipeline([
+        ('vect', CountVectorizer(tokenizer=tokenize)),
+        ('tfidf', TfidfTransformer()),
+        ('clf', MultiOutputClassifier(RandomForestClassifier()))
+    ])
+
+    # do grid search
+    cv = GridSearchCV(estimator=pipeline, param_grid=parameters, scoring='f1_macro')
+    cv.fit(X_train, y_train)
+
+    # get best parameter value
+    param_value = list(cv.best_params_.values())[0]
+
+    return param_value
+
+
+def build_model(X_train, y_train, param_value):
+    """ train model
+    Input: train data, parameter value for RF classifier
+    output: pipeline (=model), train data with augmented data from MLSMOTE,
+        vectorizer and tfidf transformer
+    """
     # initialize vectorizer and tfidt transformer
     vect = CountVectorizer(tokenizer=tokenize)
     tfidf = TfidfTransformer()
@@ -77,32 +111,27 @@ def build_model(X_train, y_train):
     X_con = pd.concat([X_train_tfidf, X_res], ignore_index=True)
     y_con = pd.concat([y_train, y_res], ignore_index=True)
 
-    # # fit model
-    # pipeline = Pipeline([
-    #     ('vect', CountVectorizer(tokenizer=tokenize)),
-    #     ('tfidf', TfidfTransformer()),
-    #     ('clf', MultiOutputClassifier(RandomForestClassifier(min_samples_split=3)))
-    # ])
-
+    # build pipeline
     model = Pipeline([
-        ('clf', MultiOutputClassifier(RandomForestClassifier(min_samples_split=3)))
+        ('clf', MultiOutputClassifier(RandomForestClassifier(min_samples_split=param_value)))
     ])
     
     return model, X_con, y_con, vect, tfidf
 
 
-def evaluate_model(model, X_test, Y_test, vect, tfidf):
-    # vectorize and generate tfidf of trainings data
+def evaluate_model(model, X_test, Y_test, vect):
+    """ evaluate model
+    Input: test data and vectorizer
+    Output: prints classifications report and f1-score
+    """
+    # vectorize trainings data
     X_test_counts = vect.transform(X_test)
-    # X_test_tfidf_matrix = tfidf.transform(X_test_counts)
 
     # convert np matrix to dataframe
-    # X_test_tfidf = pd.DataFrame(X_test_tfidf_matrix.A)
     X_test_counts_df = pd.DataFrame(X_test_counts.A)
     
     # predict data
     y_pred = model.predict(X_test_counts_df)
-    # y_pred = model.predict(X_test)
 
     # print classification report for each feature   
     print(classification_report(Y_test, y_pred, target_names=Y_test.keys()))
@@ -120,16 +149,19 @@ def main():
         print('Loading data...\n    DATABASE: {}'.format(database_filepath))
         X, Y = load_data(database_filepath)
         X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2)
-        
+
+        print('GridSearchCV...')
+        best_param = grid_search(X_train, Y_train)
+
         print('Building models...')
-        model, X_con, Y_con, vect, tfidf = build_model(X_train, Y_train)
+        model, X_con, Y_con, vect, tfidf = build_model(X_train, Y_train, best_param)
         # model = build_model(X_train, Y_train)
         
         print('Training models...')
         model.fit(X_con, Y_con)
         
         print('Evaluating models...')
-        evaluate_model(model, X_test, Y_test, vect, tfidf)
+        evaluate_model(model, X_test, Y_test, vect)
 
         print('Saving models...\n    MODEL: {}'.format(model_filepath))
         save_model(model, model_filepath, vect)
