@@ -4,7 +4,8 @@
 2. [Installation](#installation)
 3. [About the Data](#about-the-data)
 4. [About the Methods](#about-the-methods)
-5. [Acknowledgements & Licensing](#acknowledgements--licensing)
+5. [Web Application](#webpage)
+6. [Acknowledgements & Licensing](#acknowledgements--licensing)
 
 ## Motivation <a name="motivation"/>
 Environmental disasters increases due to climate change. Emergency services have a higher impact on disaster responses which they have to classify into categories 
@@ -38,6 +39,15 @@ tokenizer and a tfidf transformer. MLSMOTE (Multilabel Synthetic Minority Over-s
 
 The oversampling is only applied to the train data. Therefore the vectorizer and the model is saved as a pickle file. Both are used to apply the model to new text 
 messages in the web application. For future work a pipeline including vectorizer and MLSMOTE can be used as imblearn pipeline does not support multilabel yet.
+
+## Web Application <a name="webpage"/>
+Screenshots from the webpage:
+1. Navbar with link to Udacity and Github Repo. In the top there is the input for a text message to process it in the model.
+![Top section of the webpage](https://github.com/[username]/[reponame]/blob/[branch]/image.jpg?raw=true)
+
+2. Two plots of the distributions of categories and genres in the dataset.
+![Bar chart of the categories](https://github.com/[username]/[reponame]/blob/[branch]/image.jpg?raw=true)
+![Pie chart of the genres](https://github.com/[username]/[reponame]/blob/[branch]/image.jpg?raw=true)
 
 ## Acknowledgements & Licensing <a name="acknowledgements--licensing"/>
 Credits to Figure Eight Inc. to provide the data and Udacity to provide the course and the support.
