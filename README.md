@@ -40,6 +40,8 @@ tokenizer and a tfidf transformer. MLSMOTE (Multilabel Synthetic Minority Over-s
 The oversampling is only applied to the train data. Therefore the vectorizer and the model is saved as a pickle file. Both are used to apply the model to new text 
 messages in the web application. For future work a pipeline including vectorizer and MLSMOTE can be used as imblearn pipeline does not support multilabel yet.
 
+Due to lack of computational power only about half of the data is used to train the model. One can change this in 'train_classifier.py' line 31 and 32 by loading all rows.
+
 ## Web Application <a name="webpage"/>
 Screenshots from the webpage:
 1. Navbar with link to Udacity and Github Repo. In the top there is the input for a text message to process it in the model.
