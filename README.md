@@ -34,11 +34,10 @@ Both datasets are concatenated to one dataset. And finally it is saved to a sql 
 
 The python script 'train_classifier.py' generates the machine learning model.
 The english text messages are tokenized, lemmatized and stop words are being removed. The model is build by using the CountVectorizer combined with the custom 
-tokenizer and a tfidf transformer. MLSMOTE (Multilabel Synthetic Minority Over-sampling TEchnique) is used to oversample the train data. The model is evaluated 
-using the f1-score.
+tokenizer and a tfidf transformer. MLSMOTE (Multilabel Synthetic Minority Over-sampling TEchnique) is used to oversample the train data. Random Forest Classifier combined with the MultiOutputClassifier from scikit is used for classification. The model is evaluated using the f1-score.
 
 The oversampling is only applied to the train data. Therefore the vectorizer and the model is saved as a pickle file. Both are used to apply the model to new text 
-messages in the web application.
+messages in the web application. For future work a pipeline including vectorizer and MLSMOTE can be used as imblearn pipeline does not support multilabel yet.
 
 ## Acknowledgements & Licensing <a name="acknowledgements--licensing"/>
 Credits to Figure Eight Inc. to provide the data and Udacity to provide the course and the support.
