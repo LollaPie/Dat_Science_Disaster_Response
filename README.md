@@ -43,11 +43,11 @@ messages in the web application. For future work a pipeline including vectorizer
 ## Web Application <a name="webpage"/>
 Screenshots from the webpage:
 1. Navbar with link to Udacity and Github Repo. In the top there is the input for a text message to process it in the model.
-![Top section of the webpage](https://github.com/[username]/[reponame]/blob/[branch]/image.jpg?raw=true)
+![Top section of the webpage](https://github.com/LollaPie/Data_Science_Disaster_Response/blob/main/images/Screenshot_1.png?raw=true)
 
 2. Two plots of the distributions of categories and genres in the dataset.
-![Bar chart of the categories](https://github.com/[username]/[reponame]/blob/[branch]/image.jpg?raw=true)
-![Pie chart of the genres](https://github.com/[username]/[reponame]/blob/[branch]/image.jpg?raw=true)
+![Bar chart of the categories](https://github.com/LollaPie/Data_Science_Disaster_Response/blob/main/images/Screenshot_2.png?raw=true)
+![Pie chart of the genres](https://github.com/LollaPie/Data_Science_Disaster_Response/blob/main/images/Screenshot_3.png?raw=true)
 
 ## Acknowledgements & Licensing <a name="acknowledgements--licensing"/>
 Credits to Figure Eight Inc. to provide the data and Udacity to provide the course and the support.
