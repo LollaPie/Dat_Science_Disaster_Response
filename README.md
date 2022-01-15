@@ -17,6 +17,8 @@ As a capstone project for the udacity data science course I build a machine lear
 Python version 3.6 or higher is recommended.
 
 - Clone these repository
+- run the 'process_data.py' to clean data and store it in a database: python data/process_data.py data/disaster_messages.csv data/disaster_categories.csv data/DisasterResponse.db
+- run the 'train_classifier.py' to train an save the model (note: only half of the data is loaded, to save computational power, edited line 31 and 32 to modify it): python models/train_classifier.py data/DisasterResponse.db models/classifier.pkl
 - cd into the app directory and run 'python run.py'
 - install required packages by run 'pip install -r requirements.txt'
 - open http://0.0.0.0:3001/ on your browser to view the web app
